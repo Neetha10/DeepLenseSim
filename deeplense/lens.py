@@ -4,7 +4,7 @@ from astropy.cosmology import FlatLambdaCDM
 from astropy import units as u
 from astropy.constants import G, c, M_sun
 
-from pyHalo.preset_models import CDM
+from pyHalo.preset_models import preset_model_from_name
 
 
 from lenstronomy.LightModel.light_model import LightModel
@@ -43,7 +43,7 @@ class DeepLens(object):
         self.z_halo = z_halo
         self.z_gal  = z_gal
 
-        realizationsCDM = CDM(z_halo, z_gal,cone_opening_angle_arcsec=10)
+        CDM = preset_model_from_name("CDM"); realizationsCDM = CDM(z_halo, z_gal, cone_opening_angle_arcsec=10)
         self.astropy_instance = realizationsCDM.astropy_instance
 
 
@@ -326,6 +326,12 @@ class DeepLens(object):
             from lenstronomy.SimulationAPI.ObservationConfig.Euclid import Euclid
             Euc = Euclid(band='VIS',psf_type='GAUSSIAN',coadd_years=6)
             self.kwargs_single_band = Euc.kwargs_single_band()
+        elif inst_name.lower()=='hst':
+            from lenstronomy.SimulationAPI.ObservationConfig.HST import HST
+            Hst=HST(band='TDLMC_F160W',psf_type='GAUSSIAN')
+            self.kwargs_single_band=Hst.kwargs_single_band()
+            self.kwargs_single_band['seeing'] = 0.08
+            self.kwargs_single_band['psf_type'] = 'GAUSSIAN'
         else:
             pass
 
